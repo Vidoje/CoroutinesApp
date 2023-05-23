@@ -7,8 +7,8 @@ import androidx.databinding.DataBindingUtil
 import com.taurunium.coroutinesapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -25,15 +25,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.downloadBtn.setOnClickListener{
-            GlobalScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 downloadBigFileFromNet()
             }
         }
     }
 
-    private fun downloadBigFileFromNet() {
+    private suspend fun downloadBigFileFromNet() {
         for(i in 1..100000){
-            Log.i("TAGY", "Downloading $i in ${Thread.currentThread().name}")
+//            Log.i("TAGY", "Downloading $i in ${Thread.currentThread().name}")
+
+            //switching between background and main thread
+            withContext(Dispatchers.Main){
+                binding.text2.text =  "Downloading $i in ${Thread.currentThread().name}"
+            }
         }
     }
 }
